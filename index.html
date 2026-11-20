@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CYBER LOUNGE — Бронь и Бар</title>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --card: #161a23;
+      --card-hover: #1e2430;
+      --text: #f3f5f8;
+      --muted: #8e96a8;
+      --border: #262c3a;
+      --accent: #00e599;
+      --accent-text: #061811;
+      --accent-soft: rgba(0, 229, 153, 0.14);
+      --danger: #ff5c5c;
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --card-hover: #f0f3f8;
+      --text: #14171f;
+      --muted: #656e80;
+      --border: #e1e5ed;
+      --accent: #00b87a;
+      --accent-text: #ffffff;
+      --accent-soft: rgba(0, 184, 122, 0.12);
+      --danger: #e53935;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 110px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Пункт 1: Шапка */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .club-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-live {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .club-meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 11px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Переключатель режима */
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 11px 8px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .mode-btn.active {
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 18px 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-hint {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* Карточки зон и пакетов */
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .card.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .card-price {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* Пакеты */
+    .pills-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .pill {
+      flex: 1;
+      min-width: 105px;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .pill.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .pill-main {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .pill-sub {
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 3px;
+      font-weight: 600;
+    }
+
+    /* Слоты времени */
+    .slots-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .slot {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 4px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .slot.selected {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+
+    .slot.busy {
+      opacity: 0.42;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    .slot span {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* Бар и допы */
+    .addon-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      gap: 10px;
+    }
+
+    .addon-info {
+      flex: 1;
+    }
+
+    .addon-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .addon-price {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .counter button {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .counter span {
+      min-width: 16px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* Форма контактов */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    /* Нижняя плавающая панель */
+    .bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      z-index: 20;
+    }
+
+    .bottom-inner {
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .total-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .total-value {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .submit-btn {
+      background: var(--accent);
+      color: var(--accent-text);
+      border: none;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Модальное окно правил */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      max-width: 420px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    .modal-box h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    .modal-box ul {
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- ПУНКТ 1: Шапка и вход -->
+  <header>
+    <div>
+      <div class="club-title">
+        CYBER LOUNGE <span class="badge-live">24/7</span>
+      </div>
+      <div class="club-meta">ул. Кабанбай батыра, 45 • PS5 & PC</div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleRules()">Правила</button>
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">☀️</button>
+    </div>
+  </header>
+
+  <div class="mode-switch">
+    <button class="mode-btn active" id="btnModeBook" onclick="setMode('book')">🎮 Бронь зала</button>
+    <button class="mode-btn" id="btnModeBar" onclick="setMode('bar')">🍿 Бар к столу</button>
+  </div>
+
+  <!-- БЛОК БРОНИРОВАНИЯ (Пункты 2 и 3) -->
+  <div id="bookingSection">
+    <div class="section-title">1. Выберите зону <span class="section-hint">шаг 1 из 3</span></div>
+    <div class="stack" id="zonesList"></div>
+
+    <div class="section-title">2. Тариф / пакет</div>
+    <div class="pills-row" id="packagesList"></div>
+
+    <div class="section-title">3. Дата и время старта</div>
+    <div class="pills-row" id="datesList" style="margin-bottom: 10px;"></div>
+    <div class="slots-grid" id="slotsList"></div>
+  </div>
+
+  <!-- БЛОК ЗАКАЗА СО СТОЛА (если зашли по QR из комнаты) -->
+  <div id="tableSelectSection" class="hidden">
+    <div class="section-title">Где вы сидите?</div>
+    <select id="tableNumber">
+      <option value="VIP-комната 1 (Cyber)">VIP-комната 1 (Cyber)</option>
+      <option value="VIP-комната 2 (Lounge)">VIP-комната 2 (Lounge)</option>
+      <option value="Общий зал — PS5 №1">Общий зал — PS5 №1</option>
+      <option value="Общий зал — PS5 №2">Общий зал — PS5 №2</option>
+      <option value="Зона PC — Место №1">Зона PC — Место №1</option>
+      <option value="Зона PC — Место №2">Зона PC — Место №2</option>
+    </select>
+  </div>
+
+  <!-- ПУНКТ 4: Бар и допы -->
+  <div class="section-title">
+    <span id="addonsTitle">4. Допы и бар к приходу</span>
+    <span class="section-hint">необязательно</span>
+  </div>
+  <div class="stack" id="addonsList"></div>
+
+  <!-- ПУНКТ 5: Контакты -->
+  <div class="section-title">Ваши контакты</div>
+  <div class="input-group">
+    <input type="text" id="clientName" placeholder="Ваше имя (например, Алихан)" />
+    <input type="tel" id="clientPhone" placeholder="Телефон (+7 700 000 00 00)" />
+  </div>
+</div>
+
+<!-- Нижняя панель итога -->
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <div>
+      <div class="total-label" id="summaryText">VIP-1 • 1 час</div>
+      <div class="total-value" id="totalPrice">3 500 ₸</div>
+    </div>
+    <button class="submit-btn" onclick="submitOrder()">Отправить бронь →</button>
+  </div>
+</div>
+
+<!-- Модалка с правилами -->
+<div class="modal-backdrop" id="rulesModal" onclick="toggleRules()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h3>Правила CYBER LOUNGE</h3>
+    <ul>
+      <li>Бронь держится 15 минут от выбранного времени.</li>
+      <li>После 22:00 вход строго 18+ (при себе иметь удостоверение / eGov).</li>
+      <li>Со своими напитками и едой вход запрещён — в клубе работает бар и кухня.</li>
+      <li>При отмене брони позже чем за 1 час просим предупредить админа.</li>
+    </ul>
+    <button class="submit-btn" style="width:100%" onclick="toggleRules()">Понятно</button>
+  </div>
+</div>
+
+<script>
+  const CLUB_PHONE = "77001234567"; // Замени на номер клуба для теста
+
+  const ZONES = [
+    { id: "vip1", name: "VIP-комната «Cyber» (PS5)", desc: "4K TV 65\" • 4 геймпада • до 4 чел. • FC 26, UFC 5, MK1", price: 3500 },
+    { id: "vip2", name: "VIP-комната «Lounge» (PS5)", desc: "4K TV 75\" • Угловой диван • до 8 чел. • Вытяжка под кальян", price: 5000 },
+    { id: "pc", name: "Игровой PC PRO (1 место)", desc: "RTX 4070 • Монитор 240Hz • CS2, Dota 2, Valorant", price: 1200 }
+  ];
+
+  const PACKAGES = [
+    { id: "1h", title: "1 час", sub: "Базовый", mult: 1 },
+    { id: "3plus1", title: "3 + 1 час", sub: "Выгода 25%", mult: 3 },
+    { id: "night", title: "Ночь 23–07", sub: "Фикс. цена", fixedVip: 12000, fixedPc: 4500 }
+  ];
+
+  const DATES = ["Сегодня", "Завтра", "Послезавтра"];
+
+  const SLOTS = [
+    { time: "16:00", busy: false },
+    { time: "17:00", busy: false },
+    { time: "18:00", busy: true },
+    { time: "19:00", busy: true },
+    { time: "20:00", busy: false },
+    { time: "21:00", busy: false },
+    { time: "22:00", busy: false },
+    { time: "23:00", busy: false }
+  ];
+
+  const ADDONS = [
+    { id: "hookah", name: "Дымный кальян (любой вкус)", price: 4500 },
+    { id: "set", name: "Сет «На компанию» (чипсы + 2 колы)", price: 3200 },
+    { id: "energy", name: "Энергетик Gorilla / Red Bull", price: 900 },
+    { id: "pad", name: "Доп. геймпад DualSense", price: 1000 }
+  ];
+
+  let state = {
+    mode: "book",
+    zoneId: "vip1",
+    pkgId: "1h",
+    date: "Сегодня",
+    slot: "20:00",
+    cart: {}
+  };
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute("data-theme") === "dark";
+    html.setAttribute("data-theme", isDark ? "light" : "dark");
+    document.getElementById("themeBtn").textContent = isDark ? "🌙" : "☀️";
+  }
+
+  function toggleRules() {
+    document.getElementById("rulesModal").classList.toggle("open");
+  }
+
+  function setMode(mode) {
+    state.mode = mode;
+    document.getElementById("btnModeBook").classList.toggle("active", mode === "book");
+    document.getElementById("btnModeBar").classList.toggle("active", mode === "bar");
+    document.getElementById("bookingSection").classList.toggle("hidden", mode !== "book");
+    document.getElementById("tableSelectSection").classList.toggle("hidden", mode !== "bar");
+    document.getElementById("addonsTitle").textContent =
+      mode === "book" ? "4. Допы и бар к приходу" : "Выберите напитки и снеки";
+    document.querySelector(".submit-btn").textContent =
+      mode === "book" ? "Отправить бронь →" : "Заказать к столу →";
+    renderSummary();
+  }
+
+  function renderZones() {
+    document.getElementById("zonesList").innerHTML = ZONES.map(z => `
+      <div class="card ${state.zoneId === z.id ? "selected" : ""}" onclick="selectZone('${z.id}')">
+        <div class="card-top">
+          <div class="card-title">${z.name}</div>
+          <div class="card-price">${z.price.toLocaleString("ru-RU")} ₸/ч</div>
+        </div>
+        <div class="card-desc">${z.desc}</div>
+      </div>
+    `).join("");
+  }
+
+  function renderPackages() {
+    document.getElementById("packagesList").innerHTML = PACKAGES.map(p => `
+      <div class="pill ${state.pkgId === p.id ? "selected" : ""}" onclick="selectPkg('${p.id}')">
+        <div class="pill-main">${p.title}</div>
+        <div class="pill-sub">${p.sub}</div>
+      </div>
+    `).join("");
+  }
+
+  function renderDates() {
+    document.getElementById("datesList").innerHTML = DATES.map(d => `
+      <div class="pill ${state.date === d ? "selected" : ""}" onclick="selectDate('${d}')">
+        <div class="pill-main">${d}</div>
+      </div>
+    `).join("");
+  }
+
+  function renderSlots() {
+    document.getElementById("slotsList").innerHTML = SLOTS.map(s => `
+      <div class="slot ${s.busy ? "busy" : ""} ${state.slot === s.time && !s.busy ? "selected" : ""}"
+           onclick="${s.busy ? "" : `selectSlot('${s.time}')`}">
+        ${s.time}
+        <span>${s.busy ? "Занято" : "Свободно"}</span>
+      </div>
+    `).join("");
+  }
+
+  function renderAddons() {
+    document.getElementById("addonsList").innerHTML = ADDONS.map(a => {
+      const qty = state.cart[a.id] || 0;
+      return `
+        <div class="addon-row">
+          <div class="addon-info">
+            <div class="addon-name">${a.name}</div>
+            <div class="addon-price">${a.price.toLocaleString("ru-RU")} ₸</div>
+          </div>
+          <div class="counter">
+            <button onclick="changeQty('${a.id}', -1)">−</button>
+            <span>${qty}</span>
+            <button onclick="changeQty('${a.id}', 1)">+</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function selectZone(id) { state.zoneId = id; renderAll(); }
+  function selectPkg(id) { state.pkgId = id; renderAll(); }
+  function selectDate(d) { state.date = d; renderAll(); }
+  function selectSlot(t) { state.slot = t; renderAll(); }
+  function changeQty(id, delta) {
+    const next = (state.cart[id] || 0) + delta;
+    if (next <= 0) delete state.cart[id];
+    else state.cart[id] = next;
+    renderAll();
+  }
+
+  function calculateTotal() {
+    let base = 0;
+    if (state.mode === "book") {
+      const zone = ZONES.find(z => z.id === state.zoneId);
+      const pkg = PACKAGES.find(p => p.id === state.pkgId);
+      if (pkg.id === "night") {
+        base = zone.id === "pc" ? pkg.fixedPc : pkg.fixedVip;
+      } else {
+        base = zone.price * pkg.mult;
+      }
+    }
+    const addonsSum = ADDONS.reduce((sum, a) => sum + (state.cart[a.id] || 0) * a.price, 0);
+    return base + addonsSum;
+  }
+
+  function renderSummary() {
+    const total = calculateTotal();
+    document.getElementById("totalPrice").textContent = `${total.toLocaleString("ru-RU")} ₸`;
+
+    if (state.mode === "book") {
+      const zone = ZONES.find(z => z.id === state.zoneId);
+      const pkg = PACKAGES.find(p => p.id === state.pkgId);
+      document.getElementById("summaryText").textContent = `${zone.name.split(" ")[0]} • ${state.date}, ${state.slot} (${pkg.title})`;
+    } else {
+      const count = Object.values(state.cart).reduce((a, b) => a + b, 0);
+      document.getElementById("summaryText").textContent = `Позиций из бара: ${count} шт.`;
+    }
+  }
+
+  function submitOrder() {
+    const name = document.getElementById("clientName").value.trim() || "Гость";
+    const phone = document.getElementById("clientPhone").value.trim() || "не указан";
+    const total = calculateTotal();
+
+    const addonsText = ADDONS
+      .filter(a => state.cart[a.id])
+      .map(a => `• ${a.name} × ${state.cart[a.id]}`)
+      .join("\n");
+
+    let text = "";
+    if (state.mode === "book") {
+      const zone = ZONES.find(z => z.id === state.zoneId);
+      const pkg = PACKAGES.find(p => p.id === state.pkgId);
+      text =
+        `🎮 *НОВАЯ БРОНЬ — CYBER LOUNGE*\n\n` +
+        `📍 *Зона:* ${zone.name}\n` +
+        `🎟 *Тариф:* ${pkg.title}\n` +
+        `🗓 *Когда:* ${state.date}, ${state.slot}\n` +
+        (addonsText ? `\n🍿 *Допы к приходу:*\n${addonsText}\n` : "") +
+        `\n💰 *Итого:* ${total.toLocaleString("ru-RU")} ₸\n` +
+        `👤 *Имя:* ${name}\n` +
+        `📞 *Тел:* ${phone}`;
+    } else {
+      const table = document.getElementById("tableNumber").value;
+      if (!addonsText) {
+        alert("Выберите хотя бы одну позицию из бара!");
+        return;
+      }
+      text =
+        `🍿 *ЗАКАЗ ИЗ БАРА К СТОЛУ*\n\n` +
+        `📍 *Место:* ${table}\n` +
+        `🛒 *Заказ:*\n${addonsText}\n\n` +
+        `💰 *Итого:* ${total.toLocaleString("ru-RU")} ₸\n` +
+        `👤 *Имя:* ${name}`;
+    }
+
+    const waUrl = `https://wa.me/${CLUB_PHONE}?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, "_blank");
+  }
+
+  function renderAll() {
+    renderZones();
+    renderPackages();
+    renderDates();
+    renderSlots();
+    renderAddons();
+    renderSummary();
+  }
+
+  renderAll();
+</script>
+</body>
+</html>
